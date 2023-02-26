@@ -1,9 +1,9 @@
-import { useContext } from "react";
+import { useStoreState } from "easy-peasy";
 import Feed from "../components/Feed";
-import DataContext from "../context/DataContext";
+import Missing from "./Missing";
 
-function HomePage() {
-  const { posts, loading, errorMsg } = useContext(DataContext);
+function HomePage({ loading, errorMsg }) {
+  const posts = useStoreState((state) => state.posts);
 
   return (
     <div>
@@ -15,6 +15,8 @@ function HomePage() {
         posts.map((post) => {
           return <Feed key={post.id} post={post} />;
         })}
+
+      {!posts.length && <Missing />}
     </div>
   );
 }

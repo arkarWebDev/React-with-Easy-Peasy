@@ -1,32 +1,24 @@
-import { useContext, useState } from "react";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
-import apiCall from "../api/apiCall";
-
-import DataContext from "../context/DataContext";
+import { useStoreState, useStoreActions } from "easy-peasy";
 
 const CreatePost = () => {
-  const { posts, setPosts } = useContext(DataContext);
-  const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
+  const posts = useStoreState((state) => state.posts);
+  const body = useStoreState((state) => state.body);
+  const title = useStoreState((state) => state.title);
+  const setBody = useStoreActions((actions) => actions.setBody);
+  const setTitle = useStoreActions((actions) => actions.setTitle);
+  const createPost = useStoreActions((actions) => actions.postCreate);
   const navigate = useNavigate();
 
   const postCreate = async (e) => {
     e.preventDefault();
     const id = posts.length ? posts[posts.length - 1].id + 1 : 1;
+    const publish_at = format(new Date(), "MMMM dd, yyyy pp");
+    const newPost = { id, title, body, publish_at };
 
-    try {
-      const publish_at = format(new Date(), "MMMM dd, yyyy pp");
-      const newPost = { id, title, body, publish_at };
-      const response = await apiCall.post("posts", newPost);
-      const newPostsData = [...posts, response.data];
-      setPosts(newPostsData.reverse());
-      setTitle("");
-      setBody("");
-      navigate("/");
-    } catch (error) {
-      console.log(error.message);
-    }
+    createPost(newPost);
+    navigate("/");
   };
 
   return (

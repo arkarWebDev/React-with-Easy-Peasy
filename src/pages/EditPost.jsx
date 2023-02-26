@@ -1,14 +1,16 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import DataContext from "../context/DataContext";
-import apiCall from "../api/apiCall";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { useStoreActions, useStoreState } from "easy-peasy";
 
 function EditPost() {
-  const { posts, setPosts } = useContext(DataContext);
-  const [editTitle, setEditTitle] = useState("");
-  const [editBody, setEditBody] = useState("");
+  const posts = useStoreState((state) => state.posts);
+  const editBody = useStoreState((state) => state.editBody);
+  const editTitle = useStoreState((state) => state.editTitle);
+  const setEditBody = useStoreActions((actions) => actions.setEditBody);
+  const setEditTitle = useStoreActions((actions) => actions.setEditTitle);
+  const editPostCB = useStoreActions((actions) => actions.postEdit);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -18,19 +20,8 @@ function EditPost() {
     const publish_at = format(new Date(), "MMMM dd, yyyy pp");
     const editPost = { id, title: editTitle, body: editBody, publish_at };
 
-    try {
-      const response = await apiCall.patch(`posts/${id}`, editPost);
-      setPosts(
-        posts.map((post) =>
-          post.id.toString() === id ? { ...response.data } : post
-        )
-      );
-      setEditTitle("");
-      setEditBody("");
-      navigate("/");
-    } catch (error) {
-      console.log(error.message);
-    }
+    editPostCB(editPost);
+    navigate("/");
   };
 
   useEffect(() => {

@@ -1,9 +1,5 @@
-import { useContext } from "react";
 import { RiSearchLine } from "react-icons/ri";
-import DataContext from "../context/DataContext";
-
-function SearchBox() {
-  const { searchKey, setSearchKey, getSearchPost } = useContext(DataContext);
+function SearchBox({ searchKey, setSearchKey, getSearchPost }) {
   return (
     <div>
       <form onSubmit={(e) => getSearchPost(e)}>

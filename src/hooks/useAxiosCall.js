@@ -17,7 +17,8 @@ const useAxiosCall = (dataUrl) => {
           cancelToken: source.token,
         });
         if (isMounted) {
-          setPostData(response.data);
+          const data = response.data;
+          setPostData(data.reverse());
           setErrorMsg(null);
         }
       } catch (err) {
